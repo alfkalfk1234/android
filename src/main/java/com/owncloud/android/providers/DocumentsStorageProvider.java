@@ -26,6 +26,7 @@ import android.accounts.Account;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
@@ -33,6 +34,7 @@ import android.database.Cursor;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.os.Handler;
@@ -572,6 +574,7 @@ public class DocumentsStorageProvider extends DocumentsProvider {
         context.getContentResolver().notifyChange(toNotifyUri(parentFolder), null, false);
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void recursiveRevokePermission(Document document) {
         FileDataStorageManager storageManager = document.getStorageManager();
         OCFile file = document.getFile();

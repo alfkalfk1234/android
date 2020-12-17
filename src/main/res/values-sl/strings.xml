@@ -79,7 +79,7 @@
     <string name="autoupload_disable_power_save_check">Onemogoči preverjanje porabe energije</string>
     <string name="autoupload_hide_folder">Skrij mapo</string>
     <string name="avatar">Avatar</string>
-    <string name="away">Ne spremljam</string>
+    <string name="away">Odsoten</string>
     <string name="battery_optimization_close">Zapri</string>
     <string name="battery_optimization_disable">Onemogoči</string>
     <string name="battery_optimization_message">Naprava ima najverjetneje omogočeno možnost optimizacije porabe baterije. Program AutoUpload pravilno deluje le, če je izvzet iz nje.</string>
@@ -90,7 +90,6 @@
     <string name="checkbox">Izbirno polje</string>
     <string name="choose_local_folder">Izberi krajevno mapo…</string>
     <string name="choose_remote_folder">Izberi oddaljeno mapo…</string>
-    <string name="choose_which_file">Izberite, katero datoteko želite obdržati!</string>
     <string name="clear_notifications_failed">Počiščenje obvestil je spodletelo.</string>
     <string name="clear_status_message">Počisti sporočilo stanja</string>
     <string name="clear_status_message_after">Počisti sporočilo stanja po</string>
@@ -146,7 +145,6 @@
     <string name="confirmation_remove_local">Le krajevno</string>
     <string name="conflict_already_existing_file">Obstoječa datoteka</string>
     <string name="conflict_dialog_error">Prišlo je do napake med ustvarjanjem pogovornega okna spora!</string>
-    <string name="conflict_file_headline">Različice %1$s v sporu.</string>
     <string name="conflict_message_description">Če izberete obe različici, bo k imenu krajevne datoteke dodana številka.</string>
     <string name="conflict_message_headline">Katere datoteke želite ohraniti?</string>
     <string name="conflict_new_file">Nova datoteka</string>
@@ -377,12 +375,11 @@
     <string name="hint_password">Geslo</string>
     <string name="host_not_available">Strežnik ni na voljo</string>
     <string name="host_your_own_server">Gostite osebni strežnik</string>
-    <string name="in_folder">v mapi %1$s</string>
     <string name="instant_upload_existing">Pošlji tudi obstoječe datoteke</string>
     <string name="instant_upload_on_charging">Usklajuj le med polnjenjem naprave</string>
     <string name="instant_upload_path">/Hipno nalaganje</string>
     <string name="invalid_url">Neveljaven naslov URL</string>
-    <string name="invisible">Drugim nevidno</string>
+    <string name="invisible">Drugim neviden</string>
     <string name="label_empty">Oznaka ne sme biti prazno polje</string>
     <string name="link">Povezava</string>
     <string name="link_share_allow_upload_and_editing">Dovoli pošiljanje in urejanje</string>
@@ -489,8 +486,6 @@
     <string name="placeholder_media_time">12:23:45</string>
     <string name="placeholder_sentence">To je vsebnik predmetov</string>
     <string name="placeholder_timestamp">2012/05/18 12:23 PM</string>
-    <string name="player_stop">končaj</string>
-    <string name="player_toggle">preklop</string>
     <string name="power_save_check_dialog_message">Onemogočanje varčevanja lahko povzroči pošiljanje datotek, ko je napetost baterije že nizka!</string>
     <string name="pref_behaviour_entries_delete_file">izbrisano</string>
     <string name="pref_behaviour_entries_keep_file">ohranjeno v izvorni mapi</string>
@@ -537,7 +532,6 @@
     <string name="prefs_show_hidden_files">Pokaži skrite datoteke</string>
     <string name="prefs_sourcecode">Pridobi izvorno kodo</string>
     <string name="prefs_storage_path">Mesto shrambe</string>
-    <string name="prefs_sycned_folders_summary">Upravljanje map za samodejno pošiljanje</string>
     <string name="prefs_synced_folders_local_path_title">Krajevna mapa</string>
     <string name="prefs_synced_folders_remote_path_title">Mapa na strežniku</string>
     <string name="prefs_theme_title">Tema</string>
@@ -698,7 +692,7 @@
     <string name="sync_foreign_files_forgotten_ticker">Nekatere krajevne datoteke so spregledane</string>
     <string name="sync_in_progress">Poteka pridobivanje zadnje različice datoteke.</string>
     <string name="sync_not_enough_space_dialog_action_choose">Izbor predmetov za usklajevanje</string>
-    <string name="sync_not_enough_space_dialog_action_free_space">Sprostite prostor</string>
+    <string name="sync_not_enough_space_dialog_action_free_space">Izpraznite prostor</string>
     <string name="sync_not_enough_space_dialog_placeholder">%1$s je %2$s, vendar je na napravi na voljo le %3$s.</string>
     <string name="sync_not_enough_space_dialog_title">Ni dovolj prostora</string>
     <string name="sync_status_button">Gumb stanja usklajevanja</string>
@@ -793,7 +787,7 @@
     <string name="uploader_wrn_no_account_text">Za %1$s ni določenega računa. Pred nadaljevanjem ga je treba ustvariti.</string>
     <string name="uploader_wrn_no_account_title">Ni najdenega nobenega računa</string>
     <string name="uploads_view_group_current_uploads">Trenutno</string>
-    <string name="uploads_view_group_failed_uploads">Ponovno pošiljanje je spodletelo oziroma je na čakanju.</string>
+    <string name="uploads_view_group_failed_uploads">Ponovni zagon je spodletel ali pa je na čakanju.</string>
     <string name="uploads_view_group_finished_uploads">Poslano</string>
     <string name="uploads_view_later_waiting_to_upload">Poteka čakanje na pošiljanje…</string>
     <string name="uploads_view_title">Poslano</string>

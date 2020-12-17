@@ -23,7 +23,6 @@
 package com.nextcloud.client;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Intent;
 
 import com.owncloud.android.AbstractIT;
@@ -55,10 +54,8 @@ public class SyncedFoldersActivityIT extends AbstractIT {
 
     @Test
     @ScreenshotTest
-    public void open() {
-        Activity sut = activityRule.launchActivity(null);
-
-        screenshot(sut);
+    public void openDrawer() {
+        super.openDrawer(activityRule);
     }
 
     @Test

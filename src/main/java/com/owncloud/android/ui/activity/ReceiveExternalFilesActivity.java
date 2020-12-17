@@ -36,6 +36,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -56,6 +57,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -164,6 +166,7 @@ public class ReceiveExternalFilesActivity extends FileActivity
     private TextView mEmptyListMessage;
     private TextView mEmptyListHeadline;
     private ImageView mEmptyListIcon;
+    private ProgressBar mEmptyListProgress;
     private MaterialButton sortButton;
 
     @Override
@@ -329,7 +332,7 @@ public class ReceiveExternalFilesActivity extends FileActivity
         }
 
         @Override
-        public void onAttach(@NonNull Context context) {
+        public void onAttach(Context context) {
             super.onAttach(context);
         }
 
@@ -797,6 +800,9 @@ public class ReceiveExternalFilesActivity extends FileActivity
         mEmptyListMessage = findViewById(R.id.empty_list_view_text);
         mEmptyListHeadline = findViewById(R.id.empty_list_view_headline);
         mEmptyListIcon = findViewById(R.id.empty_list_icon);
+        mEmptyListProgress = findViewById(R.id.empty_list_progress);
+        mEmptyListProgress.getIndeterminateDrawable().setColorFilter(ThemeUtils.primaryColor(this),
+                PorterDuff.Mode.SRC_IN);
     }
 
     public void setMessageForEmptyList(@StringRes final int headline, @StringRes final int message,
@@ -805,8 +811,11 @@ public class ReceiveExternalFilesActivity extends FileActivity
             if (mEmptyListContainer != null && mEmptyListMessage != null) {
                 mEmptyListHeadline.setText(headline);
                 mEmptyListMessage.setText(message);
+
                 mEmptyListIcon.setImageDrawable(ThemeUtils.tintDrawable(icon, ThemeUtils.primaryColor(this, true)));
+
                 mEmptyListIcon.setVisibility(View.VISIBLE);
+                mEmptyListProgress.setVisibility(View.GONE);
                 mEmptyListMessage.setVisibility(View.VISIBLE);
             }
         });

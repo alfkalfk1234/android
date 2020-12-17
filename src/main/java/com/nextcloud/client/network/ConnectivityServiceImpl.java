@@ -21,7 +21,6 @@
 package com.nextcloud.client.network;
 
 import android.net.ConnectivityManager;
-import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 
 import com.nextcloud.client.account.Server;
@@ -111,21 +110,7 @@ class ConnectivityServiceImpl implements ConnectivityService {
 
         if (networkInfo != null) {
             boolean isConnected = networkInfo.isConnectedOrConnecting();
-
-            // more detailed check
-            boolean isMetered;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                NetworkCapabilities networkCapabilities = platformConnectivityManager.getNetworkCapabilities(
-                    platformConnectivityManager.getActiveNetwork());
-
-                if (networkCapabilities != null) {
-                    isMetered = !networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED);
-                } else {
-                    isMetered = ConnectivityManagerCompat.isActiveNetworkMetered(platformConnectivityManager);
-                }
-            } else {
-                isMetered = ConnectivityManagerCompat.isActiveNetworkMetered(platformConnectivityManager);
-            }
+            boolean isMetered = ConnectivityManagerCompat.isActiveNetworkMetered(platformConnectivityManager);
             boolean isWifi = networkInfo.getType() == ConnectivityManager.TYPE_WIFI || hasNonCellularConnectivity();
             return new Connectivity(isConnected, isMetered, isWifi, null);
         } else {

@@ -122,7 +122,7 @@ public final class ThemeUtils {
         }
     }
 
-    public static int calculateDarkColor(int color, Context context) {
+    public static int calculateDarkColor(int color, Context context){
         try {
             return adjustLightness(-0.2f, color, -1f);
         } catch (Exception e) {
@@ -364,7 +364,7 @@ public final class ThemeUtils {
     }
 
     public static void setStatusBarColor(Activity activity, @ColorInt int color) {
-        if (activity != null) {
+        if (activity != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             activity.getWindow().setStatusBarColor(color);
         }
     }
@@ -450,7 +450,11 @@ public final class ThemeUtils {
      */
     public static void colorProgressBar(ProgressBar progressBar, @ColorInt int color) {
         if (progressBar != null) {
-            progressBar.setProgressTintList(ColorStateList.valueOf(color));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                progressBar.setProgressTintList(ColorStateList.valueOf(color));
+            } else {
+                ThemeUtils.colorHorizontalProgressBar(progressBar, color);
+            }
         }
     }
 
@@ -487,7 +491,7 @@ public final class ThemeUtils {
     }
 
     /**
-     * Sets the color of the status bar to {@code color}.
+     * Sets the color of the status bar to {@code color} on devices with OS version lollipop or higher.
      *
      * @param fragmentActivity fragment activity
      * @param color            the color
@@ -495,7 +499,7 @@ public final class ThemeUtils {
     public static void colorStatusBar(Activity fragmentActivity, @ColorInt int color) {
         Window window = fragmentActivity.getWindow();
         boolean isLightTheme = lightTheme(color);
-        if (window != null) {
+        if (window != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.setStatusBarColor(color);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 View decor = window.getDecorView();
@@ -664,8 +668,7 @@ public final class ThemeUtils {
 
     /**
      * Will change a menu item text tint
-     *
-     * @param item  the menu item object
+     * @param item the menu item object
      * @param color the wanted color (as resource or color)
      */
     public static void tintMenuItemText(MenuItem item, int color) {

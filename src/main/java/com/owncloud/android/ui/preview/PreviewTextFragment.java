@@ -32,13 +32,14 @@ import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.nextcloud.client.account.UserAccountManager;
 import com.nextcloud.client.device.DeviceInfo;
 import com.nextcloud.client.di.Injectable;
 import com.owncloud.android.R;
-import com.owncloud.android.databinding.TextFilePreviewBinding;
 import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.lib.common.utils.Log_OC;
 import com.owncloud.android.ui.activity.FileDisplayActivity;
@@ -78,16 +79,22 @@ import io.noties.prism4j.annotations.PrismBundle;
 public abstract class PreviewTextFragment extends FileFragment implements SearchView.OnQueryTextListener, Injectable {
     private static final String TAG = PreviewTextFragment.class.getSimpleName();
 
-    protected SearchView searchView;
-    protected String searchQuery = "";
-    protected boolean searchOpen;
-    protected Handler handler;
-    protected String originalText;
+
+    protected SearchView mSearchView;
+    protected String mSearchQuery = "";
+    protected boolean mSearchOpen;
+    protected TextView mTextPreview;
+    protected Handler mHandler;
+    protected String mOriginalText;
+    protected View mMultiListContainer;
+
+    private TextView mMultiListMessage;
+    private TextView mMultiListHeadline;
+    private ImageView mMultiListIcon;
+    private ProgressBar mMultiListProgress;
 
     @Inject UserAccountManager accountManager;
     @Inject DeviceInfo deviceInfo;
-
-    protected TextFilePreviewBinding binding;
 
     /**
      * {@inheritDoc}
@@ -98,12 +105,31 @@ public abstract class PreviewTextFragment extends FileFragment implements Search
         super.onCreateView(inflater, container, savedInstanceState);
         Log_OC.e(TAG, "onCreateView");
 
-        binding = TextFilePreviewBinding.inflate(inflater, container, false);
-        View view = binding.getRoot();
+        View ret = inflater.inflate(R.layout.text_file_preview, container, false);
+        mTextPreview = ret.findViewById(R.id.text_preview);
 
-        binding.emptyListProgress.setVisibility(View.VISIBLE);
+        setupMultiView(ret);
+        setMultiListLoadingMessage();
 
-        return view;
+        return ret;
+    }
+
+    private void setupMultiView(View view) {
+        mMultiListContainer = view.findViewById(R.id.empty_list_view);
+        mMultiListMessage = view.findViewById(R.id.empty_list_view_text);
+        mMultiListHeadline = view.findViewById(R.id.empty_list_view_headline);
+        mMultiListIcon = view.findViewById(R.id.empty_list_icon);
+        mMultiListProgress = view.findViewById(R.id.empty_list_progress);
+    }
+
+    private void setMultiListLoadingMessage() {
+        if (mMultiListContainer != null) {
+            mMultiListHeadline.setText(R.string.file_list_loading);
+            mMultiListMessage.setText("");
+
+            mMultiListIcon.setVisibility(View.GONE);
+            mMultiListProgress.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -112,12 +138,6 @@ public abstract class PreviewTextFragment extends FileFragment implements Search
         Log_OC.e(TAG, "onStart");
 
         loadAndShowTextPreview();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
     }
 
     abstract void loadAndShowTextPreview();
@@ -136,28 +156,28 @@ public abstract class PreviewTextFragment extends FileFragment implements Search
 
 
     private void performSearch(final String query, int delay) {
-        handler.removeCallbacksAndMessages(null);
+        mHandler.removeCallbacksAndMessages(null);
 
-        if (originalText != null) {
+        if (mOriginalText != null) {
             if (getActivity() instanceof FileDisplayActivity) {
                 FileDisplayActivity fileDisplayActivity = (FileDisplayActivity) getActivity();
                 fileDisplayActivity.setSearchQuery(query);
             }
-            handler.postDelayed(() -> {
+            mHandler.postDelayed(() -> {
                 if (query != null && !query.isEmpty()) {
                     if (getContext() != null && getContext().getResources() != null) {
-                        String coloredText = StringUtils.searchAndColor(originalText, query,
-                                                                        getContext().getResources().getColor(R.color.primary));
-                        binding.textPreview.setText(Html.fromHtml(coloredText.replace("\n", "<br \\>")));
+                        String coloredText = StringUtils.searchAndColor(mOriginalText, query,
+                            getContext().getResources().getColor(R.color.primary));
+                        mTextPreview.setText(Html.fromHtml(coloredText.replace("\n", "<br \\>")));
                     }
                 } else {
-                    setText(binding.textPreview, originalText, getFile(), getActivity());
+                    setText(mTextPreview, mOriginalText, getFile(), getActivity());
                 }
             }, delay);
         }
 
-        if (delay == 0 && searchView != null) {
-            searchView.clearFocus();
+        if (delay == 0 && mSearchView != null) {
+            mSearchView.clearFocus();
         }
     }
 
