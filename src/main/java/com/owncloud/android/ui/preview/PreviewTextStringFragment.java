@@ -78,11 +78,11 @@ public class PreviewTextStringFragment extends PreviewTextFragment {
         Bundle args = getArguments();
 
         if (args.containsKey(FileDisplayActivity.EXTRA_SEARCH_QUERY)) {
-            mSearchQuery = args.getString(FileDisplayActivity.EXTRA_SEARCH_QUERY);
+            searchQuery = args.getString(FileDisplayActivity.EXTRA_SEARCH_QUERY);
         }
-        mSearchOpen = args.getBoolean(FileDisplayActivity.EXTRA_SEARCH, false);
+        searchOpen = args.getBoolean(FileDisplayActivity.EXTRA_SEARCH, false);
 
-        mHandler = new Handler();
+        handler = new Handler();
     }
 
     /**
@@ -104,15 +104,10 @@ public class PreviewTextStringFragment extends PreviewTextFragment {
         }
 
         FloatingActionButton fabMain = requireActivity().findViewById(R.id.fab_main);
-
-        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            fabMain.setVisibility(View.GONE);
-        } else {
-            fabMain.setVisibility(View.VISIBLE);
-            fabMain.setEnabled(true);
-            fabMain.setOnClickListener(v -> edit());
-            ThemeUtils.colorFloatingActionButton(fabMain, R.drawable.ic_edit, requireContext());
-        }
+        fabMain.setVisibility(View.VISIBLE);
+        fabMain.setEnabled(true);
+        fabMain.setOnClickListener(v -> edit());
+        ThemeUtils.colorFloatingActionButton(fabMain, R.drawable.ic_edit, requireContext());
 
         return view;
     }
@@ -126,27 +121,23 @@ public class PreviewTextStringFragment extends PreviewTextFragment {
 
         MenuItem menuItem = menu.findItem(R.id.action_search);
         menuItem.setVisible(true);
-        mSearchView = (SearchView) MenuItemCompat.getActionView(menuItem);
-        mSearchView.setOnQueryTextListener(this);
-        mSearchView.setMaxWidth(Integer.MAX_VALUE);
+        searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
+        searchView.setOnQueryTextListener(this);
+        searchView.setMaxWidth(Integer.MAX_VALUE);
 
-        if (mSearchOpen) {
-            mSearchView.setIconified(false);
-            mSearchView.setQuery(mSearchQuery, true);
-            mSearchView.clearFocus();
+        if (searchOpen) {
+            searchView.setIconified(false);
+            searchView.setQuery(searchQuery, true);
+            searchView.clearFocus();
         }
     }
 
     void loadAndShowTextPreview() {
-        if (mTextPreview != null) {
-            mOriginalText = getFile().getRichWorkspace();
-            setText(mTextPreview, mOriginalText, getFile(), requireActivity(), true, false);
-            mTextPreview.setVisibility(View.VISIBLE);
-        }
+        originalText = getFile().getRichWorkspace();
+        setText(binding.textPreview, originalText, getFile(), requireActivity(), true, false);
 
-        if (mMultiListContainer != null) {
-            mMultiListContainer.setVisibility(View.GONE);
-        }
+        binding.textPreview.setVisibility(View.VISIBLE);
+        binding.emptyListProgress.setVisibility(View.GONE);
     }
 
     private void edit() {

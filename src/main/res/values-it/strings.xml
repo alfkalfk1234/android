@@ -90,6 +90,7 @@
     <string name="checkbox">Casella di selezione</string>
     <string name="choose_local_folder">Scegli la cartella locale…</string>
     <string name="choose_remote_folder">Scegli la cartella remota…</string>
+    <string name="choose_which_file">Scegli quale file mantenere!</string>
     <string name="clear_notifications_failed">Cancellazione notifiche non riuscita.</string>
     <string name="clear_status_message">Cancella il messaggio di stato</string>
     <string name="clear_status_message_after">Cancella il messaggio di stato dopo</string>
@@ -145,6 +146,7 @@
     <string name="confirmation_remove_local">Solo localmente</string>
     <string name="conflict_already_existing_file">File già esistente</string>
     <string name="conflict_dialog_error">Errore di creazione della finestra di conflitto!</string>
+    <string name="conflict_file_headline">File %1$s in conflitto</string>
     <string name="conflict_message_description">Se selezioni entrambe le versioni, il file locale ha un numero aggiunto al suo nome.</string>
     <string name="conflict_message_headline">Quali file vuoi mantenere?</string>
     <string name="conflict_new_file">Nuovo file</string>
@@ -191,6 +193,7 @@
     <string name="dev_version_new_version_available">Nuova versione disponibile</string>
     <string name="dev_version_no_information_available">Nessuna informazione disponibile.</string>
     <string name="dev_version_no_new_version_available">Nessuna nuova versione disponibile.</string>
+    <string name="dialog_close">Chiudi</string>
     <string name="digest_algorithm_not_available">Questo algoritmo digest non è disponibile sul tuo telefono.</string>
     <string name="disable_new_media_folder_detection_notifications">Disabilita</string>
     <string name="dismiss">Annulla</string>
@@ -375,6 +378,7 @@
     <string name="hint_password">Password</string>
     <string name="host_not_available">Server non disponibile</string>
     <string name="host_your_own_server">Ospita il tuo server</string>
+    <string name="in_folder">nella cartella %1$s</string>
     <string name="instant_upload_existing">Carica anche i file esistenti</string>
     <string name="instant_upload_on_charging">Carica solo durante la ricarica</string>
     <string name="instant_upload_path">/InstantUpload</string>
@@ -486,6 +490,8 @@
     <string name="placeholder_media_time">12:23:45</string>
     <string name="placeholder_sentence">Questo è un segnaposto</string>
     <string name="placeholder_timestamp">2012/05/18 12:23 PM</string>
+    <string name="player_stop">ferma</string>
+    <string name="player_toggle">attiva</string>
     <string name="power_save_check_dialog_message">La disabilitazione del controllo di risparmio energetico potrebbe risultare in caricamenti di file in uno stato di bassa carica della batteria.</string>
     <string name="pref_behaviour_entries_delete_file">eliminato</string>
     <string name="pref_behaviour_entries_keep_file">lasciato nella cartella originale</string>
@@ -532,6 +538,7 @@
     <string name="prefs_show_hidden_files">Mostra i file nascosti</string>
     <string name="prefs_sourcecode">Ottieni codice sorgente</string>
     <string name="prefs_storage_path">Percorso di archiviazione</string>
+    <string name="prefs_sycned_folders_summary">Gestisci le cartelle per il caricamento automatico</string>
     <string name="prefs_synced_folders_local_path_title">Cartella locale</string>
     <string name="prefs_synced_folders_remote_path_title">Cartella remota</string>
     <string name="prefs_theme_title">Tema</string>
@@ -826,6 +833,8 @@
     <string name="whats_new_skip">Salta</string>
     <string name="whats_new_title">Prima volta su %1$s</string>
     <string name="whats_your_status">Qual è il tuo stato?</string>
+    <string name="wrong_storage_path">Il percorso di archiviazione non esiste!</string>
+    <string name="wrong_storage_path_desc">Ciò potrebbe essere dovuto a un ripristino di un backup su un altro dispositivo. Tornando al valore predefinito. Verifica le impostazioni per modificare il percorso di archiviazione.</string>
     <plurals name="sync_fail_in_favourites_content">
         <item quantity="one">Impossibile sincronizzare %1$d file (conflitto con: %2$d)</item>
         <item quantity="other">Impossibile sincronizzare %1$d file (conflitto con: %2$d)</item>

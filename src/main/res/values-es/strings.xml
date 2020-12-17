@@ -90,6 +90,7 @@
     <string name="checkbox">Casilla de verificación</string>
     <string name="choose_local_folder">Seleccione carpeta local…</string>
     <string name="choose_remote_folder">Selecciona carpeta remota…</string>
+    <string name="choose_which_file">¡Elije que archivos mantener!</string>
     <string name="clear_notifications_failed">Fallo al limpiar notificaciones.</string>
     <string name="clear_status_message">Borrar mensaje de estado</string>
     <string name="clear_status_message_after">Borrar mensaje de estado después de</string>
@@ -145,6 +146,7 @@
     <string name="confirmation_remove_local">Solo local</string>
     <string name="conflict_already_existing_file">Archivo ya existente</string>
     <string name="conflict_dialog_error">¡Error al crear el diálogo de conflicto!</string>
+    <string name="conflict_file_headline">Conflicto en archivo %1$s</string>
     <string name="conflict_message_description">Si seleccionas ambas versiones, el archivo local tendrá un número añadido a su nombre.</string>
     <string name="conflict_message_headline">¿Qué archivos desea mantener?</string>
     <string name="conflict_new_file">Nuevo archivo</string>
@@ -375,6 +377,7 @@
     <string name="hint_password">Contraseña</string>
     <string name="host_not_available">Servidor no disponible</string>
     <string name="host_your_own_server">Aloja tu propio servidor</string>
+    <string name="in_folder">en carpeta %1$s</string>
     <string name="instant_upload_existing">Subir también archivos existentes</string>
     <string name="instant_upload_on_charging">Subir solo al cargar batería</string>
     <string name="instant_upload_path">/SubidaInstantánea</string>
@@ -486,6 +489,8 @@
     <string name="placeholder_media_time">12:23:45</string>
     <string name="placeholder_sentence">Esto es un marcador de posición</string>
     <string name="placeholder_timestamp">18/05/2012 12:23 PM</string>
+    <string name="player_stop">parar</string>
+    <string name="player_toggle">cambiar</string>
     <string name="power_save_check_dialog_message">Desactivar la comprobación de ahorro de energía puede causar que se suban ficheros aun estando en modo de baja batería</string>
     <string name="pref_behaviour_entries_delete_file">borrado</string>
     <string name="pref_behaviour_entries_keep_file">dejado en la carpeta original</string>
@@ -532,6 +537,7 @@
     <string name="prefs_show_hidden_files">Mostrar archivos ocultos</string>
     <string name="prefs_sourcecode">Obtener el código fuente</string>
     <string name="prefs_storage_path">Ruta de almacenamiento</string>
+    <string name="prefs_sycned_folders_summary">Administrar carpetas para auto-subida</string>
     <string name="prefs_synced_folders_local_path_title">Carpeta local</string>
     <string name="prefs_synced_folders_remote_path_title">Carpeta remota</string>
     <string name="prefs_theme_title">Tema</string>
