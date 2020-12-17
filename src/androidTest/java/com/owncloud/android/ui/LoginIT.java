@@ -28,7 +28,6 @@ import android.os.Bundle;
 
 import com.nextcloud.client.account.UserAccountManager;
 import com.nextcloud.client.account.UserAccountManagerImpl;
-import com.owncloud.android.AbstractIT;
 import com.owncloud.android.R;
 import com.owncloud.android.authentication.AuthenticatorActivity;
 
@@ -55,7 +54,7 @@ import static org.junit.Assert.assertEquals;
 
 
 @LargeTest
-public class LoginIT extends AbstractIT {
+public class LoginIT {
     @Rule
     public GrantPermissionRule permissionRule = GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 

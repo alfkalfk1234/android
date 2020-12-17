@@ -90,7 +90,6 @@
     <string name="checkbox">Caixa de selección</string>
     <string name="choose_local_folder">Escoller cartafol local…</string>
     <string name="choose_remote_folder">Escoller cartafol remoto…</string>
-    <string name="choose_which_file">Escolla o ficheiro que quere conservar.</string>
     <string name="clear_notifications_failed">Produciuse un fallo ao limpar as notificacións.</string>
     <string name="clear_status_message">Limpar a mensaxe de estado</string>
     <string name="clear_status_message_after">Limpar a mensaxe de estado após</string>
@@ -146,7 +145,6 @@
     <string name="confirmation_remove_local">Só local</string>
     <string name="conflict_already_existing_file">Ficheiro existente</string>
     <string name="conflict_dialog_error">Produciuse un erro ao crear o diálogo de conflitos!</string>
-    <string name="conflict_file_headline">Ficheiro en conflito %1$s</string>
     <string name="conflict_message_description">Se selecciona ambas versións, o ficheiro local terá un número engadido ao nome.</string>
     <string name="conflict_message_headline">Que ficheiros quere conservar?</string>
     <string name="conflict_new_file">Novo ficheiro</string>
@@ -377,7 +375,6 @@
     <string name="hint_password">Contrasinal</string>
     <string name="host_not_available">Servidor non dispoñíbel</string>
     <string name="host_your_own_server">Hospede o seu propio servidor</string>
-    <string name="in_folder">no cartafol %1$s</string>
     <string name="instant_upload_existing">Envíar tamén os ficheiros existentes</string>
     <string name="instant_upload_on_charging">Enviar só cando estea cargando</string>
     <string name="instant_upload_path">/EnvíoInstantáneo</string>
@@ -489,8 +486,6 @@
     <string name="placeholder_media_time">12:23:45</string>
     <string name="placeholder_sentence">Isto é un marcador de posición</string>
     <string name="placeholder_timestamp">18/05/2012 12:23 PM</string>
-    <string name="player_stop">parar</string>
-    <string name="player_toggle">alternar</string>
     <string name="power_save_check_dialog_message">A desactivación da verificación de aforro de enerxía pode provocar a carga de ficheiros cando estea coa batería baixa.</string>
     <string name="pref_behaviour_entries_delete_file">eliminado</string>
     <string name="pref_behaviour_entries_keep_file">mantense no cartafol orixinal</string>
@@ -538,7 +533,6 @@
     <string name="prefs_show_hidden_files">Amosar ficheiros agochados</string>
     <string name="prefs_sourcecode">Obter o código fonte</string>
     <string name="prefs_storage_path">Ruta de almacenamento</string>
-    <string name="prefs_sycned_folders_summary">Xestionar os cartafoles para a envío automático</string>
     <string name="prefs_synced_folders_local_path_title">Cartafol local</string>
     <string name="prefs_synced_folders_remote_path_title">Cartafol remoto</string>
     <string name="prefs_theme_title">Tema</string>

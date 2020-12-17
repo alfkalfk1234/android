@@ -317,8 +317,6 @@ public class SettingsActivity extends ThemedPreferenceActivity
         preferenceCategoryMore.setTitle(ThemeUtils.getColoredTitle(getString(R.string.prefs_category_more),
                 accentColor));
 
-        setupAutoUploadPreference(preferenceCategoryMore);
-
         setupCalendarPreference(preferenceCategoryMore);
 
         setupContactsBackupPreference(preferenceCategoryMore);
@@ -454,19 +452,6 @@ public class SettingsActivity extends ThemedPreferenceActivity
             } else {
                 preferenceCategoryMore.removePreference(pHelp);
             }
-        }
-    }
-
-    private void setupAutoUploadPreference(PreferenceCategory preferenceCategoryMore) {
-        Preference autoUpload = findPreference("syncedFolders");
-        if (getResources().getBoolean(R.bool.syncedFolder_light)) {
-            preferenceCategoryMore.removePreference(autoUpload);
-        } else {
-            autoUpload.setOnPreferenceClickListener(preference -> {
-                Intent intent = new Intent(this, SyncedFoldersActivity.class);
-                startActivity(intent);
-                return true;
-            });
         }
     }
 
@@ -633,8 +618,9 @@ public class SettingsActivity extends ThemedPreferenceActivity
                 if (getResources().getBoolean(R.bool.syncedFolder_light)
                         && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     pSyncedFolder.setOnPreferenceClickListener(preference -> {
-                        Intent intent = new Intent(this, SyncedFoldersActivity.class);
-                        startActivity(intent);
+                        Intent syncedFoldersIntent = new Intent(getApplicationContext(), SyncedFoldersActivity.class);
+                        syncedFoldersIntent.putExtra(SyncedFoldersActivity.EXTRA_SHOW_SIDEBAR, false);
+                        startActivity(syncedFoldersIntent);
                         return true;
                     });
                 } else {

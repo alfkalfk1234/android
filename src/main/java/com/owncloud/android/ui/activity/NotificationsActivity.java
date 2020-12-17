@@ -24,10 +24,15 @@
 
 package com.owncloud.android.ui.activity;
 
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.nextcloud.client.account.User;
@@ -36,7 +41,6 @@ import com.nextcloud.client.jobs.NotificationWork;
 import com.nextcloud.client.network.ClientFactory;
 import com.nextcloud.java.util.Optional;
 import com.owncloud.android.R;
-import com.owncloud.android.databinding.NotificationsLayoutBinding;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
 import com.owncloud.android.lib.common.OwnCloudClient;
 import com.owncloud.android.lib.common.operations.RemoteOperation;
@@ -57,6 +61,12 @@ import javax.inject.Inject;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import butterknife.BindString;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 /**
  * Activity displaying all server side stored notification items.
@@ -65,7 +75,36 @@ public class NotificationsActivity extends DrawerActivity implements Notificatio
 
     private static final String TAG = NotificationsActivity.class.getSimpleName();
 
-    private NotificationsLayoutBinding binding;
+    @BindView(R.id.empty_list_view)
+    public LinearLayout emptyContentContainer;
+
+    public SwipeRefreshLayout swipeListRefreshLayout;
+
+    public SwipeRefreshLayout swipeEmptyListRefreshLayout;
+
+    @BindView(R.id.empty_list_view_text)
+    public TextView emptyContentMessage;
+
+    @BindView(R.id.empty_list_view_headline)
+    public TextView emptyContentHeadline;
+
+    @BindView(R.id.empty_list_icon)
+    public ImageView emptyContentIcon;
+
+    @BindView(R.id.empty_list_progress)
+    public ProgressBar emptyContentProgressBar;
+
+    @BindView(android.R.id.list)
+    public RecyclerView recyclerView;
+
+    @BindString(R.string.notifications_no_results_headline)
+    public String noResultsHeadline;
+
+    @BindString(R.string.notifications_no_results_message)
+    public String noResultsMessage;
+
+    private Unbinder unbinder;
+
     private NotificationListAdapter adapter;
     private Snackbar snackbar;
     private OwnCloudClient client;
@@ -78,8 +117,8 @@ public class NotificationsActivity extends DrawerActivity implements Notificatio
         Log_OC.v(TAG, "onCreate() start");
         super.onCreate(savedInstanceState);
 
-        binding = NotificationsLayoutBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        setContentView(R.layout.notifications_layout);
+        unbinder = ButterKnife.bind(this);
 
         optionalUser = getUser();
 
@@ -101,29 +140,27 @@ public class NotificationsActivity extends DrawerActivity implements Notificatio
 
         updateActionBarTitleAndHomeButtonByString(getString(R.string.drawer_item_notifications));
 
-        ThemeUtils.colorSwipeRefreshLayout(this, binding.swipeContainingList);
-        ThemeUtils.colorSwipeRefreshLayout(this, binding.swipeContainingEmpty);
+        swipeEmptyListRefreshLayout = findViewById(R.id.swipe_containing_empty);
+        swipeListRefreshLayout = findViewById(R.id.swipe_containing_list);
+        ThemeUtils.colorSwipeRefreshLayout(this, swipeListRefreshLayout);
+        ThemeUtils.colorSwipeRefreshLayout(this, swipeEmptyListRefreshLayout);
 
         // setup drawer
         setupDrawer(R.id.nav_notifications);
 
         if (!optionalUser.isPresent()) {
             // show error
-            runOnUiThread(() -> setEmptyContent(
-                getString(R.string.notifications_no_results_headline),
-                getString(R.string.account_not_found))
-                         );
+            runOnUiThread(() -> setEmptyContent(noResultsHeadline, getString(R.string.account_not_found)));
             return;
         }
 
-        binding.swipeContainingList.setOnRefreshListener(() -> {
+        swipeListRefreshLayout.setOnRefreshListener(() -> {
             setLoadingMessage();
-            binding.swipeContainingList.setRefreshing(true);
             fetchAndSetData();
         });
 
-        binding.swipeContainingEmpty.setOnRefreshListener(() -> {
-            setLoadingMessageEmpty();
+        swipeEmptyListRefreshLayout.setOnRefreshListener(() -> {
+            setLoadingMessage();
             fetchAndSetData();
         });
 
@@ -140,9 +177,8 @@ public class NotificationsActivity extends DrawerActivity implements Notificatio
             String pushUrl = getResources().getString(R.string.push_server_url);
 
             if (pushUrl.isEmpty()) {
-                snackbar = Snackbar.make(binding.emptyList.emptyListView,
-                                         R.string.push_notifications_not_implemented,
-                                         Snackbar.LENGTH_INDEFINITE);
+                snackbar = Snackbar.make(emptyContentContainer, R.string.push_notifications_not_implemented,
+                        Snackbar.LENGTH_INDEFINITE);
             } else {
                 final ArbitraryDataProvider arbitraryDataProvider = new ArbitraryDataProvider(getContentResolver());
                 final String accountName = optionalUser.isPresent() ? optionalUser.get().getAccountName() : "";
@@ -150,16 +186,14 @@ public class NotificationsActivity extends DrawerActivity implements Notificatio
                                                                      UserAccountManager.ACCOUNT_USES_STANDARD_PASSWORD);
 
                 if (usesOldLogin) {
-                    snackbar = Snackbar.make(binding.emptyList.emptyListView,
-                                             R.string.push_notifications_old_login,
-                                             Snackbar.LENGTH_INDEFINITE);
+                    snackbar = Snackbar.make(emptyContentContainer, R.string.push_notifications_old_login,
+                            Snackbar.LENGTH_INDEFINITE);
                 } else {
                     String pushValue = arbitraryDataProvider.getValue(accountName, PushUtils.KEY_PUSH);
 
                     if (pushValue == null || pushValue.isEmpty()) {
-                        snackbar = Snackbar.make(binding.emptyList.emptyListView,
-                                                 R.string.push_notifications_temp_error,
-                                                 Snackbar.LENGTH_INDEFINITE);
+                        snackbar = Snackbar.make(emptyContentContainer, R.string.push_notifications_temp_error,
+                                Snackbar.LENGTH_INDEFINITE);
                     }
                 }
             }
@@ -186,16 +220,23 @@ public class NotificationsActivity extends DrawerActivity implements Notificatio
         setupPushWarning();
     }
 
+    public void onDestroy() {
+        super.onDestroy();
+        unbinder.unbind();
+    }
+
     /**
      * sets up the UI elements and loads all notification items.
      */
     private void setupContent() {
-        binding.emptyList.emptyListIcon.setImageResource(R.drawable.ic_notification);
-        setLoadingMessageEmpty();
+        emptyContentIcon.setImageResource(R.drawable.ic_notification);
+        emptyContentProgressBar.getIndeterminateDrawable().setColorFilter(ThemeUtils.primaryAccentColor(this),
+                                                                          PorterDuff.Mode.SRC_IN);
+        setLoadingMessage();
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
 
-        binding.list.setLayoutManager(layoutManager);
+        recyclerView.setLayoutManager(layoutManager);
 
         fetchAndSetData();
     }
@@ -203,18 +244,14 @@ public class NotificationsActivity extends DrawerActivity implements Notificatio
     @VisibleForTesting
     public void populateList(List<Notification> notifications) {
         adapter.setNotificationItems(notifications);
-        binding.loadingContent.setVisibility(View.GONE);
 
         if (notifications.size() > 0) {
-            binding.swipeContainingEmpty.setVisibility(View.GONE);
-            binding.swipeContainingList.setVisibility(View.VISIBLE);
+            swipeEmptyListRefreshLayout.setVisibility(View.GONE);
+            swipeListRefreshLayout.setVisibility(View.VISIBLE);
         } else {
-            setEmptyContent(
-                getString(R.string.notifications_no_results_headline),
-                getString(R.string.notifications_no_results_message)
-                           );
-            binding.swipeContainingList.setVisibility(View.GONE);
-            binding.swipeContainingEmpty.setVisibility(View.VISIBLE);
+            setEmptyContent(noResultsHeadline, noResultsMessage);
+            swipeListRefreshLayout.setVisibility(View.GONE);
+            swipeEmptyListRefreshLayout.setVisibility(View.VISIBLE);
         }
     }
 
@@ -231,7 +268,7 @@ public class NotificationsActivity extends DrawerActivity implements Notificatio
 
             if (adapter == null) {
                 adapter = new NotificationListAdapter(client, this);
-                binding.list.setAdapter(adapter);
+                recyclerView.setAdapter(adapter);
             }
 
             RemoteOperation getRemoteNotificationOperation = new GetNotificationsRemoteOperation();
@@ -244,7 +281,7 @@ public class NotificationsActivity extends DrawerActivity implements Notificatio
             } else {
                 Log_OC.d(TAG, result.getLogMessage());
                 // show error
-                runOnUiThread(() -> setEmptyContent(getString(R.string.notifications_no_results_headline), result.getLogMessage()));
+                runOnUiThread(() -> setEmptyContent(noResultsHeadline, result.getLogMessage()));
             }
 
             hideRefreshLayoutLoader();
@@ -255,8 +292,8 @@ public class NotificationsActivity extends DrawerActivity implements Notificatio
 
     private void hideRefreshLayoutLoader() {
         runOnUiThread(() -> {
-            binding.swipeContainingList.setRefreshing(false);
-            binding.swipeContainingEmpty.setRefreshing(false);
+            swipeListRefreshLayout.setRefreshing(false);
+            swipeEmptyListRefreshLayout.setRefreshing(false);
         });
     }
 
@@ -270,51 +307,52 @@ public class NotificationsActivity extends DrawerActivity implements Notificatio
     public boolean onOptionsItemSelected(MenuItem item) {
         boolean retval = true;
 
-        int itemId = item.getItemId();
-        if (itemId == android.R.id.home) {
-            if (isDrawerOpen()) {
-                closeDrawer();
-            } else {
-                openDrawer();
-            }
-        } else if (itemId == R.id.action_empty_notifications) {
-            new DeleteAllNotificationsTask(client, this).execute();
-        } else {
-            retval = super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                if (isDrawerOpen()) {
+                    closeDrawer();
+                } else {
+                    openDrawer();
+                }
+                break;
+
+            case R.id.action_empty_notifications:
+                new DeleteAllNotificationsTask(client, this).execute();
+                break;
+
+            default:
+                retval = super.onOptionsItemSelected(item);
+                break;
         }
 
         return retval;
     }
 
     private void setLoadingMessage() {
-        binding.swipeContainingEmpty.setVisibility(View.GONE);
-    }
+        emptyContentHeadline.setText(R.string.notifications_loading_activity);
+        emptyContentMessage.setText("");
 
-    @VisibleForTesting
-    public void setLoadingMessageEmpty() {
-        binding.swipeContainingList.setVisibility(View.GONE);
-        binding.emptyList.emptyListView.setVisibility(View.GONE);
-        binding.loadingContent.setVisibility(View.VISIBLE);
+        emptyContentIcon.setVisibility(View.GONE);
+        emptyContentProgressBar.setVisibility(View.VISIBLE);
     }
 
     @VisibleForTesting
     public void setEmptyContent(String headline, String message) {
-        binding.swipeContainingList.setVisibility(View.GONE);
-        binding.loadingContent.setVisibility(View.GONE);
-        binding.swipeContainingEmpty.setVisibility(View.VISIBLE);
-        binding.emptyList.emptyListView.setVisibility(View.VISIBLE);
+        if (emptyContentContainer != null && emptyContentMessage != null) {
+            emptyContentHeadline.setText(headline);
+            emptyContentMessage.setText(message);
+            emptyContentMessage.setVisibility(View.VISIBLE);
 
-        binding.emptyList.emptyListViewHeadline.setText(headline);
-        binding.emptyList.emptyListViewText.setText(message);
-        binding.emptyList.emptyListIcon.setImageResource(R.drawable.ic_notification);
-
-        binding.emptyList.emptyListViewText.setVisibility(View.VISIBLE);
-        binding.emptyList.emptyListIcon.setVisibility(View.VISIBLE);
+            emptyContentProgressBar.setVisibility(View.GONE);
+            emptyContentIcon.setImageResource(R.drawable.ic_notification);
+            emptyContentIcon.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
         setDrawerMenuItemChecked(R.id.nav_notifications);
     }
 
@@ -331,10 +369,9 @@ public class NotificationsActivity extends DrawerActivity implements Notificatio
         adapter.removeNotification(holder);
 
         if (adapter.getItemCount() == 0) {
-            setEmptyContent(getString(R.string.notifications_no_results_headline), getString(R.string.notifications_no_results_message));
-            binding.swipeContainingList.setVisibility(View.GONE);
-            binding.loadingContent.setVisibility(View.GONE);
-            binding.swipeContainingEmpty.setVisibility(View.VISIBLE);
+            setEmptyContent(noResultsHeadline, noResultsMessage);
+            swipeListRefreshLayout.setVisibility(View.GONE);
+            swipeEmptyListRefreshLayout.setVisibility(View.VISIBLE);
         }
     }
 
@@ -342,10 +379,9 @@ public class NotificationsActivity extends DrawerActivity implements Notificatio
     public void onRemovedAllNotifications(boolean isSuccess) {
         if (isSuccess) {
             adapter.removeAllNotifications();
-            setEmptyContent(getString(R.string.notifications_no_results_headline), getString(R.string.notifications_no_results_message));
-            binding.loadingContent.setVisibility(View.GONE);
-            binding.swipeContainingList.setVisibility(View.GONE);
-            binding.swipeContainingEmpty.setVisibility(View.VISIBLE);
+            setEmptyContent(noResultsHeadline, noResultsMessage);
+            swipeListRefreshLayout.setVisibility(View.GONE);
+            swipeEmptyListRefreshLayout.setVisibility(View.VISIBLE);
         } else {
             DisplayUtils.showSnackMessage(this, getString(R.string.clear_notifications_failed));
         }

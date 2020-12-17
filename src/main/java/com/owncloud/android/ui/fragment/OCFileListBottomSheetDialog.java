@@ -21,6 +21,7 @@
 package com.owncloud.android.ui.fragment;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -126,6 +127,7 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog {
         OCCapability capability = fileActivity.getCapabilities();
         if (capability.getRichDocuments().isTrue() &&
             capability.getRichDocumentsDirectEditing().isTrue() &&
+            android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
             capability.getRichDocumentsTemplatesAvailable().isTrue() &&
             !file.isEncrypted()) {
             templates.setVisibility(View.VISIBLE);
@@ -135,6 +137,7 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog {
             .getValue(user, ArbitraryDataProvider.DIRECT_EDITING);
 
         if (!json.isEmpty() &&
+            android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
             !file.isEncrypted()) {
             DirectEditing directEditing = new Gson().fromJson(json, DirectEditing.class);
 
@@ -171,7 +174,8 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog {
         }
 
         // create rich workspace
-        if (FileMenuFilter.isEditorAvailable(getContext().getContentResolver(),
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
+            FileMenuFilter.isEditorAvailable(getContext().getContentResolver(),
                                              user,
                                              MimeTypeUtil.MIMETYPE_TEXT_MARKDOWN) &&
             file != null && !file.isEncrypted()) {

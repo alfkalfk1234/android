@@ -24,13 +24,13 @@ package com.owncloud.android.ui.preview;
 
 import android.accounts.Account;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.nextcloud.client.account.User;
@@ -107,9 +107,9 @@ public class PreviewTextFileFragment extends PreviewTextFragment {
         }
 
         if (args.containsKey(FileDisplayActivity.EXTRA_SEARCH_QUERY)) {
-            searchQuery = args.getString(FileDisplayActivity.EXTRA_SEARCH_QUERY);
+            mSearchQuery = args.getString(FileDisplayActivity.EXTRA_SEARCH_QUERY);
         }
-        searchOpen = args.getBoolean(FileDisplayActivity.EXTRA_SEARCH, false);
+        mSearchOpen = args.getBoolean(FileDisplayActivity.EXTRA_SEARCH, false);
 
         if (savedInstanceState == null) {
             if (file == null) {
@@ -123,7 +123,7 @@ public class PreviewTextFileFragment extends PreviewTextFragment {
             account = savedInstanceState.getParcelable(EXTRA_ACCOUNT);
         }
 
-        handler = new Handler();
+        mHandler = new Handler();
         setFile(file);
     }
 
@@ -140,8 +140,7 @@ public class PreviewTextFileFragment extends PreviewTextFragment {
 
     @Override
     void loadAndShowTextPreview() {
-        textLoadAsyncTask = new TextLoadAsyncTask(new WeakReference<>(binding.textPreview),
-                                                  new WeakReference<>(binding.emptyListProgress));
+        textLoadAsyncTask = new TextLoadAsyncTask(new WeakReference<>(mTextPreview));
         textLoadAsyncTask.execute(getFile().getStoragePath());
     }
 
@@ -150,12 +149,10 @@ public class PreviewTextFileFragment extends PreviewTextFragment {
      */
     private class TextLoadAsyncTask extends AsyncTask<Object, Void, StringWriter> {
         private static final int PARAMS_LENGTH = 1;
-        private final WeakReference<TextView> textViewReference;
-        private final WeakReference<FrameLayout> progressViewReference;
+        private final WeakReference<TextView> mTextViewReference;
 
-        private TextLoadAsyncTask(WeakReference<TextView> textView, WeakReference<FrameLayout> progressView) {
-            textViewReference = textView;
-            progressViewReference = progressView;
+        private TextLoadAsyncTask(WeakReference<TextView> textView) {
+            mTextViewReference = textView;
         }
 
         @Override
@@ -213,26 +210,25 @@ public class PreviewTextFileFragment extends PreviewTextFragment {
 
         @Override
         protected void onPostExecute(final StringWriter stringWriter) {
-            final TextView textView = textViewReference.get();
+            final TextView textView = mTextViewReference.get();
 
             if (textView != null) {
-                originalText = stringWriter.toString();
-                setText(textView, originalText, getFile(), requireActivity());
+                mOriginalText = stringWriter.toString();
+                setText(textView, mOriginalText, getFile(), requireActivity());
 
-                if (searchView != null) {
-                    searchView.setOnQueryTextListener(PreviewTextFileFragment.this);
+                if (mSearchView != null) {
+                    mSearchView.setOnQueryTextListener(PreviewTextFileFragment.this);
 
-                    if (searchOpen) {
-                        searchView.setQuery(searchQuery, true);
+                    if (mSearchOpen) {
+                        mSearchView.setQuery(mSearchQuery, true);
                     }
                 }
 
                 textView.setVisibility(View.VISIBLE);
             }
 
-            final FrameLayout progress = progressViewReference.get();
-            if (progress != null) {
-                progress.setVisibility(View.GONE);
+            if (mMultiListContainer != null) {
+                mMultiListContainer.setVisibility(View.GONE);
             }
         }
     }
@@ -247,13 +243,13 @@ public class PreviewTextFileFragment extends PreviewTextFragment {
 
         MenuItem menuItem = menu.findItem(R.id.action_search);
         menuItem.setVisible(true);
-        searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
-        searchView.setMaxWidth(Integer.MAX_VALUE);
+        mSearchView = (SearchView) MenuItemCompat.getActionView(menuItem);
+        mSearchView.setMaxWidth(Integer.MAX_VALUE);
 
-        if (searchOpen) {
-            searchView.setIconified(false);
-            searchView.setQuery(searchQuery, false);
-            searchView.clearFocus();
+        if (mSearchOpen) {
+            mSearchView.setIconified(false);
+            mSearchView.setQuery(mSearchQuery, false);
+            mSearchView.clearFocus();
         }
     }
 
@@ -287,6 +283,10 @@ public class PreviewTextFileFragment extends PreviewTextFragment {
             menu.findItem(R.id.action_favorite),
             menu.findItem(R.id.action_unset_favorite)
         );
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            FileMenuFilter.hideMenuItem(menu.findItem(R.id.action_edit));
+        }
 
         if (getFile().isSharedWithMe() && !getFile().canReshare()) {
             FileMenuFilter.hideMenuItem(menu.findItem(R.id.action_send_share_file));
@@ -326,8 +326,11 @@ public class PreviewTextFileFragment extends PreviewTextFragment {
             }
 
             case R.id.action_edit:
-                containerActivity.getFileOperationsHelper().openFileWithTextEditor(getFile(), getContext());
-                return true;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    containerActivity.getFileOperationsHelper().openFileWithTextEditor(getFile(), getContext());
+                    return true;
+                }
+                return false;
 
             default:
                 return super.onOptionsItemSelected(item);

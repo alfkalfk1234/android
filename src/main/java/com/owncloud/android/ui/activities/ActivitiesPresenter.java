@@ -48,11 +48,7 @@ public class ActivitiesPresenter implements ActivitiesContract.ActionListener {
 
     @Override
     public void loadActivities(int lastGiven) {
-        if (UNDEFINED == lastGiven) {
-            activitiesView.showLoadingMessage();
-        } else {
-            activitiesView.setProgressIndicatorState(true);
-        }
+        activitiesView.setProgressIndicatorState(true);
         activitiesRepository.getActivities(lastGiven, new ActivitiesRepository.LoadActivitiesCallback() {
             @Override
             public void onActivitiesLoaded(List<Object> activities, NextcloudClient client, int lastGiven) {

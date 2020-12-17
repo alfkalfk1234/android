@@ -42,9 +42,7 @@ import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.Display;
-import android.view.View;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.nextcloud.client.network.ConnectivityService;
@@ -255,27 +253,21 @@ public final class ThumbnailsCacheManager {
         private FileDataStorageManager storageManager;
         private Account account;
         private WeakReference<ImageView> imageViewReference;
-        private WeakReference<FrameLayout> frameLayoutReference;
         private OCFile file;
         private ConnectivityService connectivityService;
-        private int backgroundColor;
 
 
         public ResizedImageGenerationTask(FileFragment fileFragment,
                                           ImageView imageView,
-                                          FrameLayout emptyListProgress,
                                           FileDataStorageManager storageManager,
                                           ConnectivityService connectivityService,
-                                          Account account,
-                                          int backgroundColor)
+                                          Account account)
                 throws IllegalArgumentException {
             this.fileFragment = fileFragment;
             imageViewReference = new WeakReference<>(imageView);
-            frameLayoutReference = new WeakReference<>(emptyListProgress);
             this.storageManager = storageManager;
             this.connectivityService = connectivityService;
             this.account = account;
-            this.backgroundColor = backgroundColor;
         }
 
         @Override
@@ -288,7 +280,7 @@ public final class ThumbnailsCacheManager {
                 if (account != null) {
                     OwnCloudAccount ocAccount = new OwnCloudAccount(account, MainApp.getAppContext());
                     mClient = OwnCloudClientManagerFactory.getDefaultSingleton().getClientFor(ocAccount,
-                                                                                              MainApp.getAppContext());
+                            MainApp.getAppContext());
                 }
 
                 thumbnail = doResizedImageInBackground();
@@ -383,7 +375,6 @@ public final class ThumbnailsCacheManager {
         protected void onPostExecute(Bitmap bitmap) {
             if (imageViewReference != null) {
                 final ImageView imageView = imageViewReference.get();
-                final FrameLayout frameLayout = frameLayoutReference.get();
 
                 if (bitmap != null) {
                     final ResizedImageGenerationTask bitmapWorkerTask = getResizedImageGenerationWorkerTask(imageView);
@@ -392,13 +383,7 @@ public final class ThumbnailsCacheManager {
                         String tagId = String.valueOf(file.getFileId());
 
                         if (String.valueOf(imageView.getTag()).equals(tagId)) {
-                            imageView.setVisibility(View.VISIBLE);
                             imageView.setImageBitmap(bitmap);
-                            imageView.setBackgroundColor(backgroundColor);
-
-                            if (frameLayout != null) {
-                                frameLayout.setVisibility(View.GONE);
-                            }
                         }
                     }
                 } else {

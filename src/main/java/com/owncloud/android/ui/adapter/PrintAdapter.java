@@ -21,6 +21,7 @@
 
 package com.owncloud.android.ui.adapter;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
@@ -39,6 +40,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Objects;
 
+import androidx.annotation.RequiresApi;
+
+@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class PrintAdapter extends PrintDocumentAdapter {
     private static final String TAG = PrintAdapter.class.getSimpleName();
     private static final String PDF_NAME = "finalPrint.pdf";

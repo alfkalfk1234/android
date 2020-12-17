@@ -29,6 +29,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -958,7 +959,7 @@ public class OCFileListFragment extends ExtendedListFragment implements
                     } else {
                         // update state and view of this fragment
                         searchFragment = false;
-                        setEmptyListLoadingMessage();
+                        setEmptyListLoadingMessage(false);
                         listDirectory(file, MainApp.isOnlyOnDevice(), false);
                         // then, notify parent activity to let it update its state and view
                         mContainerActivity.onBrowsedDownTo(file);
@@ -1020,9 +1021,11 @@ public class OCFileListFragment extends ExtendedListFragment implements
                         } else if (FileMenuFilter.isEditorAvailable(requireContext().getContentResolver(),
                                                                     accountManager.getUser(),
                                                                     file.getMimeType()) &&
-                            !file.isEncrypted()) {
+                            !file.isEncrypted() &&
+                            android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             mContainerActivity.getFileOperationsHelper().openFileWithTextEditor(file, getContext());
                         } else if (capability.getRichDocumentsMimeTypeList().contains(file.getMimeType()) &&
+                            android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
                             capability.getRichDocumentsDirectEditing().isTrue() && !file.isEncrypted()) {
                             mContainerActivity.getFileOperationsHelper().openFileAsRichDocument(file, getContext());
                         } else {
@@ -1088,15 +1091,22 @@ public class OCFileListFragment extends ExtendedListFragment implements
                 }
                 case R.id.action_edit: {
                     // should not be necessary, as menu item is filtered, but better play safe
-                    if (FileMenuFilter.isEditorAvailable(requireContext().getContentResolver(),
-                                                         accountManager.getUser(),
-                                                         singleFile.getMimeType())) {
-                        mContainerActivity.getFileOperationsHelper().openFileWithTextEditor(singleFile, getContext());
-                    } else {
-                        mContainerActivity.getFileOperationsHelper().openFileAsRichDocument(singleFile, getContext());
-                    }
+                    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        if (FileMenuFilter.isEditorAvailable(requireContext().getContentResolver(),
+                                                             accountManager.getUser(),
+                                                             singleFile.getMimeType())) {
+                            mContainerActivity.getFileOperationsHelper().openFileWithTextEditor(singleFile,
+                                                                                                getContext());
+                        } else {
+                            mContainerActivity.getFileOperationsHelper().openFileAsRichDocument(singleFile,
+                                                                                                getContext());
+                        }
 
-                    return true;
+                        return true;
+                    } else {
+                        DisplayUtils.showSnackMessage(getView(), "Not supported on older than Android 5");
+                        return false;
+                    }
                 }
                 case R.id.action_rename_file: {
                     RenameFileDialogFragment dialog = RenameFileDialogFragment.newInstance(singleFile);

@@ -23,6 +23,7 @@ package com.owncloud.android.files;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.os.Build;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -332,7 +333,7 @@ public class FileMenuFilter {
      */
     @NextcloudServer(max = 18)
     private boolean isRichDocumentEditingSupported(OCCapability capability, String mimeType) {
-        return isSingleFile() &&
+        return isSingleFile() && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
             (capability.getRichDocumentsMimeTypeList().contains(mimeType) ||
                 capability.getRichDocumentsOptionalMimeTypeList().contains(mimeType)) &&
             capability.getRichDocumentsDirectEditing().isTrue();

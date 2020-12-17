@@ -28,7 +28,6 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -83,7 +82,6 @@ import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -100,6 +98,7 @@ public class SyncedFoldersActivity extends FileActivity implements SyncedFolderA
         SyncedFolderPreferencesDialogFragment.OnSyncedFolderPreferenceListener, Injectable {
 
     private static final String[] PRIORITIZED_FOLDERS = new String[]{"Camera", "Screenshots"};
+    public static final String EXTRA_SHOW_SIDEBAR = "SHOW_SIDEBAR";
     private static final String SYNCED_FOLDER_PREFERENCES_DIALOG_TAG = "SYNCED_FOLDER_PREFERENCES_DIALOG";
     private static final String TAG = SyncedFoldersActivity.class.getSimpleName();
 
@@ -107,6 +106,7 @@ public class SyncedFoldersActivity extends FileActivity implements SyncedFolderA
     private SyncedFolderAdapter adapter;
     private SyncedFolderProvider syncedFolderProvider;
     private SyncedFolderPreferencesDialogFragment syncedFolderPreferencesDialogFragment;
+    private boolean showSidebar = true;
 
     private String path;
     private int type;
@@ -118,6 +118,10 @@ public class SyncedFoldersActivity extends FileActivity implements SyncedFolderA
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (getIntent().getExtras() != null) {
+            showSidebar = getIntent().getExtras().getBoolean(EXTRA_SHOW_SIDEBAR);
+        }
 
         binding = SyncedFoldersLayoutBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -147,18 +151,14 @@ public class SyncedFoldersActivity extends FileActivity implements SyncedFolderA
         setupToolbar();
         updateActionBarTitleAndHomeButtonByString(getString(R.string.drawer_synced_folders));
 
-        setupDrawer();
-        setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        // setup drawer
+        setupDrawer(R.id.nav_synced_folders);
 
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-
-        if (mDrawerToggle != null) {
+        if (!showSidebar) {
+            setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             mDrawerToggle.setDrawerIndicatorEnabled(false);
         }
 
-        // TODO: The content loading should be done asynchronously
         setupContent();
 
         if (ThemeUtils.themingEnabled(this)) {
@@ -491,7 +491,7 @@ public class SyncedFoldersActivity extends FileActivity implements SyncedFolderA
      */
     private void showList() {
         binding.list.setVisibility(View.VISIBLE);
-        binding.loadingContent.setVisibility(View.GONE);
+        binding.emptyList.emptyListProgress.setVisibility(View.GONE);
         checkAndShowEmptyListContent();
     }
 
@@ -519,32 +519,45 @@ public class SyncedFoldersActivity extends FileActivity implements SyncedFolderA
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         boolean result = true;
-        int itemId = item.getItemId();
-        if (itemId == android.R.id.home) {
-            finish();
-        } else if (itemId == R.id.action_create_custom_folder) {
-            Log.d(TAG, "Show custom folder dialog");
-            SyncedFolderDisplayItem emptyCustomFolder = new SyncedFolderDisplayItem(
-                UNPERSISTED_ID,
-                null,
-                null,
-                true,
-                false,
-                true,
-                false,
-                getAccount().name,
-                FileUploader.LOCAL_BEHAVIOUR_FORGET,
-                FileUploader.NameCollisionPolicy.ASK_USER.serialize(),
-                false,
-                clock.getCurrentTime(),
-                null,
-                MediaFolderType.CUSTOM,
-                false);
-            onSyncFolderSettingsClick(0, emptyCustomFolder);
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                if (showSidebar) {
+                    if (isDrawerOpen()) {
+                        closeDrawer();
+                    } else {
+                        openDrawer();
+                    }
+                } else {
+                    Intent settingsIntent = new Intent(getApplicationContext(), SettingsActivity.class);
+                    startActivity(settingsIntent);
+                }
+                break;
+            }
 
-            result = super.onOptionsItemSelected(item);
-        } else {
-            result = super.onOptionsItemSelected(item);
+            case R.id.action_create_custom_folder: {
+                Log.d(TAG, "Show custom folder dialog");
+                SyncedFolderDisplayItem emptyCustomFolder = new SyncedFolderDisplayItem(
+                    SyncedFolder.UNPERSISTED_ID,
+                    null,
+                    null,
+                    true,
+                    false,
+                    true,
+                    false,
+                    getAccount().name,
+                    FileUploader.LOCAL_BEHAVIOUR_FORGET,
+                    FileUploader.NameCollisionPolicy.ASK_USER.serialize(),
+                    false,
+                    clock.getCurrentTime(),
+                    null,
+                    MediaFolderType.CUSTOM,
+                    false);
+                onSyncFolderSettingsClick(0, emptyCustomFolder);
+            }
+
+            default:
+                result = super.onOptionsItemSelected(item);
+                break;
         }
 
         return result;
@@ -589,28 +602,42 @@ public class SyncedFoldersActivity extends FileActivity implements SyncedFolderA
         checkAndShowEmptyListContent();
     }
 
+    private void showEmptyContent(String headline, String message) {
+        showEmptyContent(headline, message, false);
+        binding.emptyList.emptyListViewAction.setVisibility(View.GONE);
+    }
+
     private void showEmptyContent(String headline, String message, String action) {
-        showEmptyContent(headline, message);
+        showEmptyContent(headline, message, false);
         binding.emptyList.emptyListViewAction.setText(action);
         binding.emptyList.emptyListViewAction.setVisibility(View.VISIBLE);
         binding.emptyList.emptyListViewText.setVisibility(View.GONE);
     }
 
     private void showLoadingContent() {
-        binding.loadingContent.setVisibility(View.VISIBLE);
+        showEmptyContent(
+            getString(R.string.drawer_synced_folders),
+            getString(R.string.synced_folders_loading_folders),
+            true
+        );
         binding.emptyList.emptyListViewAction.setVisibility(View.GONE);
     }
 
-    private void showEmptyContent(String headline, String message) {
-        binding.emptyList.emptyListViewAction.setVisibility(View.GONE);
+    private void showEmptyContent(String headline, String message, boolean loading) {
         binding.emptyList.emptyListView.setVisibility(View.VISIBLE);
         binding.list.setVisibility(View.GONE);
-        binding.loadingContent.setVisibility(View.GONE);
 
         binding.emptyList.emptyListViewHeadline.setText(headline);
         binding.emptyList.emptyListViewText.setText(message);
         binding.emptyList.emptyListViewText.setVisibility(View.VISIBLE);
-        binding.emptyList.emptyListIcon.setVisibility(View.VISIBLE);
+
+        if (loading) {
+            binding.emptyList.emptyListProgress.setVisibility(View.VISIBLE);
+            binding.emptyList.emptyListIcon.setVisibility(View.GONE);
+        } else {
+            binding.emptyList.emptyListProgress.setVisibility(View.GONE);
+            binding.emptyList.emptyListIcon.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -786,6 +813,7 @@ public class SyncedFoldersActivity extends FileActivity implements SyncedFolderA
     @Override
     protected void onResume() {
         super.onResume();
+        setDrawerMenuItemChecked(R.id.nav_synced_folders);
     }
 
     private void showBatteryOptimizationInfo() {

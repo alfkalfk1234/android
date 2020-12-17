@@ -41,7 +41,6 @@ import com.owncloud.android.utils.FileStorageUtils;
 import junit.framework.TestCase;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 
@@ -184,11 +183,6 @@ public abstract class AbstractIT {
             DARK_MODE = "";
             COLOR = "";
         }
-    }
-
-    @Before
-    public void enableAccessibilityChecks() {
-        androidx.test.espresso.accessibility.AccessibilityChecks.enable().setRunChecksFromRootView(true);
     }
 
     protected FileDataStorageManager getStorageManager() {
